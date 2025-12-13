@@ -52,7 +52,10 @@ class Register extends BaseRegister
             ->required()
             ->minLength(8)
             ->maxLength(255)
+            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+
             ->same('passwordConfirmation')
+
             ->validationMessages([
                 'same' => 'Mật khẩu xác nhận không khớp.',
                 'min' => 'Mật khẩu phải có ít nhất 8 ký tự.',
