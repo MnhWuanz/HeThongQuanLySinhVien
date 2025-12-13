@@ -34,7 +34,7 @@ class SubjectResource extends Resource
                     ->required()
                     ->maxLength(10)
                     ->unique(ignoreRecord: true)
-                    ->disabled(fn ($livewire) => $livewire instanceof Pages\EditSubject)
+                    ->disabled(fn($livewire) => $livewire instanceof Pages\EditSubject)
                     ->dehydrated(),
                 Forms\Components\TextInput::make('name')
                     ->label('Tên môn học')
@@ -46,6 +46,11 @@ class SubjectResource extends Resource
                     ->numeric()
                     ->minValue(1)
                     ->rules(['gt:0'])
+                    ->validationMessages([
+                        'numeric' => 'Vui lòng nhập số.',
+                        'min' => 'Số tín chỉ phải lớn hơn 0.',
+                        'gt' => 'Số tín chỉ phải lớn hơn 0.',
+                    ])
                     ->helperText('Số tín chỉ phải lớn hơn 0'),
             ]);
     }
