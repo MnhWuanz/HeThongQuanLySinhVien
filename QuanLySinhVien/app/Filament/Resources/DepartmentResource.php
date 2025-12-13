@@ -34,6 +34,9 @@ class DepartmentResource extends Resource
                     ->required()
                     ->maxLength(10)
                     ->unique(ignoreRecord: true)
+                    ->validationMessages([
+                        'unique' => 'Mã khoa đã tồn tại.',
+                    ])
                     ->disabled(fn($livewire) => $livewire instanceof Pages\EditDepartment)
                     ->dehydrated(),
                 Forms\Components\TextInput::make('name')
