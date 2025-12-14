@@ -54,10 +54,13 @@ class ClassModelResource extends Resource
                             ->required()
                             ->maxLength(100),
                     ]),
-                Forms\Components\TextInput::make('advisor')
+                Forms\Components\Select::make('teacher_id')
                     ->label('Giáo viên chủ nhiệm')
-                    ->required()
-                    ->maxLength(100),
+                    ->relationship('teacher', 'full_name')
+                    ->searchable()
+                    ->preload()
+                    ->nullable()
+                    ->helperText('Chọn giảng viên từ danh sách'),
             ]);
     }
 
@@ -73,10 +76,11 @@ class ClassModelResource extends Resource
                     ->label('Khoa')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('advisor')
+                Tables\Columns\TextColumn::make('teacher.full_name')
                     ->label('Giáo viên chủ nhiệm')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->default('Chưa có'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Ngày tạo')
                     ->dateTime()

@@ -40,6 +40,13 @@ class SubjectResource extends Resource
                     ->label('Tên môn học')
                     ->required()
                     ->maxLength(100),
+                Forms\Components\Select::make('department_id')
+                    ->label('Khoa')
+                    ->relationship('department', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->nullable()
+                    ->helperText('Chọn khoa quản lý môn học này'),
                 Forms\Components\TextInput::make('credit')
                     ->label('Số tín chỉ')
                     ->required()
@@ -67,6 +74,11 @@ class SubjectResource extends Resource
                     ->label('Tên môn học')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('department.name')
+                    ->label('Khoa')
+                    ->searchable()
+                    ->sortable()
+                    ->default('Chưa có'),
                 Tables\Columns\TextColumn::make('credit')
                     ->label('Số tín chỉ')
                     ->numeric()
