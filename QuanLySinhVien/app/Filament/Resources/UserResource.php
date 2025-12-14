@@ -29,6 +29,20 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $navigationGroup = 'Quản lý người dùng';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // Chỉ Super_Admin mới thấy menu quản lý user
+        return auth()->user()?->hasRole('Super_Admin') ?? false;
+    }
+
+    public static function canViewAny(): bool
+    {
+        // Chỉ Super_Admin mới có quyền xem
+        return auth()->user()?->hasRole('Super_Admin') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -55,22 +69,24 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('password')
                             ->label('Mật khẩu')
                             ->password()
-                            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                            ->dehydrated(fn ($state) => filled($state))
-                            ->required(fn (string $context): bool => $context === 'create')
+                            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                            ->dehydrated(fn($state) => filled($state))
+                            ->required(fn(string $context): bool => $context === 'create')
                             ->maxLength(191)
                             ->helperText('Để trống nếu không muốn thay đổi mật khẩu'),
                     ]),
 
                 Forms\Components\Section::make('Phân quyền')
                     ->schema([
-                        Forms\Components\Select::make('roles')
+                        Forms\Components\Select::make('role')
                             ->label('Vai trò')
-                            ->multiple()
-                            ->relationship('roles', 'name')
-                            ->preload()
-                            ->searchable()
+                            ->options([
+                                'Super_Admin' => 'Super Admin',
+                                'Teacher' => 'Giảng viên',
+                                'Student' => 'Sinh viên',
+                            ])
                             ->required()
+                            ->default('Student')
                             ->helperText('Chọn vai trò cho user này'),
                     ]),
             ]);
@@ -89,7 +105,7 @@ class UserResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->copyable(),
-                Tables\Columns\TextColumn::make('roles.name')
+                Tables\Columns\TextColumn::make('role')
                     ->label('Vai trò')
                     ->badge()
                     ->colors([
@@ -97,7 +113,14 @@ class UserResource extends Resource
                         'warning' => 'Teacher',
                         'success' => 'Student',
                     ])
-                    ->searchable(),
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'Super_Admin' => 'Super Admin',
+                        'Teacher' => 'Giảng viên',
+                        'Student' => 'Sinh viên',
+                        default => $state,
+                    })
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('email_verified_at')
                     ->label('Đã xác thực')
                     ->boolean()
@@ -116,11 +139,14 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('roles')
+                Tables\Filters\SelectFilter::make('role')
                     ->label('Lọc theo vai trò')
-                    ->relationship('roles', 'name')
-                    ->multiple()
-                    ->preload(),
+                    ->options([
+                        'Super_Admin' => 'Super Admin',
+                        'Teacher' => 'Giảng viên',
+                        'Student' => 'Sinh viên',
+                    ])
+                    ->multiple(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Student;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -21,12 +22,23 @@ class StudentsWithScoresExport implements FromCollection, WithHeadings, WithMapp
      */
     public function collection()
     {
-        $students = Student::with(['classRelation', 'scores.subject'])
-            ->orderBy('student_id')
-            ->get();
-        
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        $query = Student::with(['classRelation', 'scores.subject'])
+            ->orderBy('student_id');
+
+        // Nếu là Teacher, chỉ xuất sinh viên của lớp mình chủ nhiệm
+        if ($user && $user->hasRole('Teacher') && $user->teacher) {
+            $query->whereHas('classRelation', function ($q) use ($user) {
+                $q->where('teacher_id', $user->teacher->id);
+            });
+        }
+
+        $students = $query->get();
+
         $data = collect();
-        
+
         foreach ($students as $student) {
             if ($student->scores->isEmpty()) {
                 // Nếu sinh viên chưa có điểm, vẫn hiển thị thông tin sinh viên
@@ -60,7 +72,7 @@ class StudentsWithScoresExport implements FromCollection, WithHeadings, WithMapp
                 }
             }
         }
-        
+
         return $data;
     }
 

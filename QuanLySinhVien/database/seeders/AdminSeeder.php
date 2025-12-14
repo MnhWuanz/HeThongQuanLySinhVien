@@ -19,6 +19,7 @@ class AdminSeeder extends Seeder
                 'name' => 'Super Admin',
                 'password' => 'password', // Sẽ được tự động hash bởi User model cast
                 'email_verified_at' => now(),
+                'role' => 'Super_Admin',
             ]
         );
     }

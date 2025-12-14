@@ -25,24 +25,50 @@ class ScoreResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Điểm số';
 
+    protected static ?string $navigationGroup = 'Quản lý học vụ';
+
+    public static function canCreate(): bool
+    {
+        // Super_Admin và Teacher có quyền tạo
+        return auth()->user()?->hasRole(['Super_Admin', 'Teacher']) ?? false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        // Super_Admin và Teacher có quyền sửa
+        return auth()->user()?->hasRole(['Super_Admin', 'Teacher']) ?? false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        // Chỉ Super_Admin mới có quyền xóa
+        return auth()->user()?->hasRole('Super_Admin') ?? false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        // Chỉ Super_Admin mới có quyền xóa nhiều
+        return auth()->user()?->hasRole('Super_Admin') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('student_id')
                     ->label('Sinh viên')
-                    ->relationship('student', 'full_name', fn ($query) => $query->orderBy('student_id'))
+                    ->relationship('student', 'full_name', fn($query) => $query->orderBy('student_id'))
                     ->searchable()
                     ->preload()
                     ->required()
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->student_id} - {$record->full_name}"),
+                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->student_id} - {$record->full_name}"),
                 Forms\Components\Select::make('subject_id')
                     ->label('Môn học')
-                    ->relationship('subject', 'name', fn ($query) => $query->orderBy('subject_id'))
+                    ->relationship('subject', 'name', fn($query) => $query->orderBy('subject_id'))
                     ->searchable()
                     ->preload()
                     ->required()
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->subject_id} - {$record->name}"),
+                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->subject_id} - {$record->name}"),
                 Forms\Components\TextInput::make('cc')
                     ->label('Chuyên cần (CC)')
                     ->numeric()
@@ -52,7 +78,8 @@ class ScoreResource extends Resource
                     ->suffix('/10')
                     ->helperText('Điểm chuyên cần (0-10)')
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn ($state, callable $set, $get) => $set('total', 
+                    ->afterStateUpdated(fn($state, callable $set, $get) => $set(
+                        'total',
                         round(($get('cc') ?? 0) * 0.1 + ($get('gk') ?? 0) * 0.3 + ($get('ck') ?? 0) * 0.6, 2)
                     )),
                 Forms\Components\TextInput::make('gk')
@@ -64,7 +91,8 @@ class ScoreResource extends Resource
                     ->suffix('/10')
                     ->helperText('Điểm giữa kỳ (0-10)')
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn ($state, callable $set, $get) => $set('total', 
+                    ->afterStateUpdated(fn($state, callable $set, $get) => $set(
+                        'total',
                         round(($get('cc') ?? 0) * 0.1 + ($get('gk') ?? 0) * 0.3 + ($get('ck') ?? 0) * 0.6, 2)
                     )),
                 Forms\Components\TextInput::make('ck')
@@ -76,7 +104,8 @@ class ScoreResource extends Resource
                     ->suffix('/10')
                     ->helperText('Điểm cuối kỳ (0-10)')
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn ($state, callable $set, $get) => $set('total', 
+                    ->afterStateUpdated(fn($state, callable $set, $get) => $set(
+                        'total',
                         round(($get('cc') ?? 0) * 0.1 + ($get('gk') ?? 0) * 0.3 + ($get('ck') ?? 0) * 0.6, 2)
                     )),
                 Forms\Components\TextInput::make('total')
@@ -88,7 +117,7 @@ class ScoreResource extends Resource
                     ->suffix('/10')
                     ->disabled()
                     ->dehydrated()
-                    ->default(fn ($get) => round(($get('cc') ?? 0) * 0.1 + ($get('gk') ?? 0) * 0.3 + ($get('ck') ?? 0) * 0.6, 2))
+                    ->default(fn($get) => round(($get('cc') ?? 0) * 0.1 + ($get('gk') ?? 0) * 0.3 + ($get('ck') ?? 0) * 0.6, 2))
                     ->helperText('Điểm tổng kết (tự động tính: CC*0.1 + GK*0.3 + CK*0.6)'),
             ]);
     }
@@ -141,7 +170,7 @@ class ScoreResource extends Resource
                     )
                     ->sortable()
                     ->alignCenter()
-                    ->color(fn ($record) => match (true) {
+                    ->color(fn($record) => match (true) {
                         $record->total >= 8.5 => 'success',
                         $record->total >= 7.0 => 'info',
                         $record->total >= 5.5 => 'warning',

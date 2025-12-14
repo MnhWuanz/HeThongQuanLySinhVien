@@ -27,6 +27,18 @@ class ActivityLogResource extends Resource
 
     protected static ?int $navigationSort = 99;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        // Chỉ Super_Admin mới thấy menu
+        return auth()->user()?->hasRole('Super_Admin') ?? false;
+    }
+
+    public static function canViewAny(): bool
+    {
+        // Chỉ Super_Admin mới có quyền xem
+        return auth()->user()?->hasRole('Super_Admin') ?? false;
+    }
+
     public static function canCreate(): bool
     {
         return false;

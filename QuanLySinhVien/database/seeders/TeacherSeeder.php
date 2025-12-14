@@ -32,6 +32,7 @@ class TeacherSeeder extends Seeder
                 'email' => $teacherData['email'],
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
+                'role' => 'Teacher',
             ]);
 
             // Tạo teacher
