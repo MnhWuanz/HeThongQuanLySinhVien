@@ -44,10 +44,11 @@
     40 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     41 => 'Termwind\\Laravel\\TermwindServiceProvider',
     42 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
-    43 => 'Spatie\\Permission\\PermissionServiceProvider',
-    44 => 'App\\Providers\\AppServiceProvider',
-    45 => 'App\\Providers\\Filament\\AdminPanelProvider',
-    46 => 'App\\Providers\\Filament\\StudentPanelProvider',
+    43 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
+    44 => 'Spatie\\Permission\\PermissionServiceProvider',
+    45 => 'App\\Providers\\AppServiceProvider',
+    46 => 'App\\Providers\\Filament\\AdminPanelProvider',
+    47 => 'App\\Providers\\Filament\\StudentPanelProvider',
   ),
   'eager' => 
   array (
@@ -79,10 +80,11 @@
     25 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     26 => 'Termwind\\Laravel\\TermwindServiceProvider',
     27 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
-    28 => 'Spatie\\Permission\\PermissionServiceProvider',
-    29 => 'App\\Providers\\AppServiceProvider',
-    30 => 'App\\Providers\\Filament\\AdminPanelProvider',
-    31 => 'App\\Providers\\Filament\\StudentPanelProvider',
+    28 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
+    29 => 'Spatie\\Permission\\PermissionServiceProvider',
+    30 => 'App\\Providers\\AppServiceProvider',
+    31 => 'App\\Providers\\Filament\\AdminPanelProvider',
+    32 => 'App\\Providers\\Filament\\StudentPanelProvider',
   ),
   'deferred' => 
   array (
