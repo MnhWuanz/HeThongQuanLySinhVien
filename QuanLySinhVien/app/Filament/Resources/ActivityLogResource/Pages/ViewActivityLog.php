@@ -3,12 +3,22 @@
 namespace App\Filament\Resources\ActivityLogResource\Pages;
 
 use App\Filament\Resources\ActivityLogResource;
-use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class ViewActivityLog extends ViewRecord
 {
     protected static string $resource = ActivityLogResource::class;
 
-    protected ?string $heading = 'Chi tiết thay đổi';
+    protected function resolveRecord($key): Model
+    {
+        return parent::resolveRecord($key)->load('causer', 'subject');
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            //
+        ];
+    }
 }

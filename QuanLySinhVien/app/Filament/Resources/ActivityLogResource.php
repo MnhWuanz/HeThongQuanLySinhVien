@@ -27,49 +27,88 @@ class ActivityLogResource extends Resource
 
     protected static ?int $navigationSort = 99;
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Thông tin')
+                Forms\Components\Section::make('Thông tin chung')
                     ->schema([
                         Forms\Components\TextInput::make('log_name')
-                            ->label('Loại log')
-                            ->disabled(),
+                            ->label('Loại log'),
                         Forms\Components\TextInput::make('description')
-                            ->label('Mô tả')
-                            ->disabled()
-                            ->columnSpanFull(),
+                            ->label('Mô tả'),
+                        Forms\Components\TextInput::make('event')
+                            ->label('Sự kiện'),
+                        Forms\Components\TextInput::make('created_at')
+                            ->label('Thời gian')
+                            ->formatStateUsing(fn($state) => $state instanceof \Carbon\Carbon ? $state->format('d/m/Y H:i:s') : $state),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Đối tượng')
+                    ->schema([
                         Forms\Components\TextInput::make('subject_type')
                             ->label('Model')
-                            ->disabled(),
+                            ->formatStateUsing(fn($state) => $state ? class_basename($state) : '—'),
                         Forms\Components\TextInput::make('subject_id')
-                            ->label('ID')
-                            ->disabled(),
+                            ->label('ID'),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Người thực hiện')
+                    ->schema([
+                        Forms\Components\TextInput::make('causer_name')
+                            ->label('Tên')
+                            ->formatStateUsing(fn($record) => $record->causer?->name ?? 'Hệ thống'),
+                        Forms\Components\TextInput::make('causer_email')
+                            ->label('Email')
+                            ->formatStateUsing(fn($record) => $record->causer?->email ?? '—'),
                         Forms\Components\TextInput::make('causer_type')
-                            ->label('Người thực hiện')
-                            ->disabled(),
+                            ->label('Loại')
+                            ->formatStateUsing(fn($state) => $state ? class_basename($state) : '—'),
                         Forms\Components\TextInput::make('causer_id')
-                            ->label('User ID')
-                            ->disabled(),
-                    ])->columns(2),
+                            ->label('ID')
+                            ->formatStateUsing(fn($record) => $record->causer_id ?? '—'),
+                    ])
+                    ->columns(2)
+                    ->collapsed(),
 
-                Forms\Components\Section::make('Thay đổi')
+                Forms\Components\Section::make('Dữ liệu thay đổi')
                     ->schema([
-                        Forms\Components\KeyValue::make('properties.attributes')
+                        Forms\Components\Placeholder::make('attributes')
                             ->label('Giá trị mới')
-                            ->disabled(),
-                        Forms\Components\KeyValue::make('properties.old')
+                            ->content(function ($record) {
+                                $properties = $record->properties ?? [];
+                                $attributes = $properties['attributes'] ?? [];
+                                return $attributes ? view('filament.components.json-display', ['data' => $attributes]) : '—';
+                            })
+                            ->columnSpanFull(),
+                        Forms\Components\Placeholder::make('old')
                             ->label('Giá trị cũ')
-                            ->disabled(),
-                    ]),
-
-                Forms\Components\Section::make('Thời gian')
-                    ->schema([
-                        Forms\Components\DateTimePicker::make('created_at')
-                            ->label('Thời gian')
-                            ->disabled(),
-                    ]),
+                            ->content(function ($record) {
+                                $properties = $record->properties ?? [];
+                                $old = $properties['old'] ?? [];
+                                return $old ? view('filament.components.json-display', ['data' => $old]) : '—';
+                            })
+                            ->columnSpanFull()
+                            ->visible(fn($record) => !empty($record->properties['old'] ?? [])),
+                    ])
+                    ->collapsed(),
             ]);
     }
 
@@ -77,107 +116,54 @@ class ActivityLogResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Thời gian')
-                    ->dateTime('d/m/Y H:i:s')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('causer.full_name')
-                    ->label('Người thực hiện')
+                Tables\Columns\TextColumn::make('log_name')
+                    ->label('Loại')
+                    ->badge()
                     ->searchable()
-                    ->sortable()
-                    ->default('Hệ thống')
-                    ->getStateUsing(function ($record) {
-                        if (!$record->causer) {
-                            return 'Hệ thống';
-                        }
-                        // Try to get the full name from related model (teacher or student)
-                        if ($record->causer->teacher) {
-                            return $record->causer->teacher->full_name;
-                        }
-                        if ($record->causer->student) {
-                            return $record->causer->student->full_name;
-                        }
-                        return $record->causer->email ?? 'N/A';
-                    }),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Hành động')
                     ->searchable()
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Tạo điểm mới' => 'success',
-                        'Cập nhật điểm' => 'warning',
-                        'Xóa điểm' => 'danger',
-                        default => 'info',
-                    }),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('subject_type')
-                    ->label('Model')
-                    ->formatStateUsing(fn ($state) => class_basename($state))
+                    ->label('Đối tượng')
+                    ->formatStateUsing(fn($state) => class_basename($state))
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('subject_id')
                     ->label('ID')
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('causer.name')
+                    ->label('Người thực hiện')
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('properties.attributes.student_id')
-                    ->label('Mã SV')
-                    ->searchable()
-                    ->default('-'),
-                Tables\Columns\TextColumn::make('properties.attributes.subject_id')
-                    ->label('Mã MH')
-                    ->searchable()
-                    ->default('-'),
-                Tables\Columns\TextColumn::make('properties.old.cc')
-                    ->label('CC cũ')
-                    ->numeric(decimalPlaces: 2)
-                    ->default('-')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('properties.attributes.cc')
-                    ->label('CC mới')
-                    ->numeric(decimalPlaces: 2)
-                    ->default('-'),
-                Tables\Columns\TextColumn::make('properties.old.gk')
-                    ->label('GK cũ')
-                    ->numeric(decimalPlaces: 2)
-                    ->default('-')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('properties.attributes.gk')
-                    ->label('GK mới')
-                    ->numeric(decimalPlaces: 2)
-                    ->default('-'),
-                Tables\Columns\TextColumn::make('properties.old.ck')
-                    ->label('CK cũ')
-                    ->numeric(decimalPlaces: 2)
-                    ->default('-')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('properties.attributes.ck')
-                    ->label('CK mới')
-                    ->numeric(decimalPlaces: 2)
-                    ->default('-'),
-                Tables\Columns\TextColumn::make('properties.old.total')
-                    ->label('TK cũ')
-                    ->numeric(decimalPlaces: 2)
-                    ->default('-')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('properties.attributes.total')
-                    ->label('TK mới')
-                    ->numeric(decimalPlaces: 2)
-                    ->default('-')
-                    ->badge()
-                    ->color('success'),
+                    ->sortable()
+                    ->default('Hệ thống'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Thời gian')
+                    ->dateTime('d/m/Y H:i:s')
+                    ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('log_name')
                     ->label('Loại log')
                     ->options([
-                        'score_changes' => 'Thay đổi điểm',
+                        'default' => 'Mặc định',
+                        'user' => 'Người dùng',
+                        'student' => 'Sinh viên',
+                        'score' => 'Điểm',
                     ]),
-                Tables\Filters\SelectFilter::make('causer_id')
-                    ->label('Người thực hiện')
-                    ->relationship('causer', 'email')
-                    ->searchable()
-                    ->preload(),
+                Tables\Filters\SelectFilter::make('subject_type')
+                    ->label('Đối tượng')
+                    ->options([
+                        'App\\Models\\User' => 'User',
+                        'App\\Models\\Student' => 'Student',
+                        'App\\Models\\Score' => 'Score',
+                        'App\\Models\\Subject' => 'Subject',
+                        'App\\Models\\ClassModel' => 'Class',
+                    ]),
                 Tables\Filters\Filter::make('created_at')
                     ->form([
                         Forms\Components\DatePicker::make('created_from')
@@ -189,11 +175,11 @@ class ActivityLogResource extends Resource
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
             ])
@@ -201,8 +187,12 @@ class ActivityLogResource extends Resource
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                // Không cho phép bulk delete log
-            ]);
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ])
+            ->defaultPaginationPageOption(25)
+            ->poll('30s');
     }
 
     public static function getRelations(): array
@@ -218,20 +208,5 @@ class ActivityLogResource extends Resource
             'index' => Pages\ListActivityLogs::route('/'),
             'view' => Pages\ViewActivityLog::route('/{record}'),
         ];
-    }
-
-    public static function canCreate(): bool
-    {
-        return false; // Không cho phép tạo log thủ công
-    }
-
-    public static function canDelete($record): bool
-    {
-        return false; // Không cho phép xóa log
-    }
-
-    public static function canDeleteAny(): bool
-    {
-        return false;
     }
 }
