@@ -29,9 +29,27 @@ class AdminPanelProvider extends PanelProvider
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->registration(\App\Filament\Pages\Auth\Register::class)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Indigo,
+                'danger' => Color::Rose,
+                'gray' => Color::Slate,
+                'info' => Color::Blue,
+                'success' => Color::Emerald,
+                'warning' => Color::Amber,
             ])
-            ->brandName('Hệ thống Quản lý - Admin')
+            ->font('Inter')
+            ->brandName('🎓 Trường Đại học ABC - Quản trị')
+            ->brandLogo(asset('images/logo.png'))
+            ->brandLogoHeight('2.5rem')
+            ->favicon(asset('images/favicon.png'))
+            ->topNavigation()
+            ->sidebarCollapsibleOnDesktop()
+            ->navigationGroups([
+                'Quản lý học vụ',
+                'Quản lý người dùng',
+                'Hệ thống',
+            ])
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -39,8 +57,12 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                \App\Filament\Widgets\TeacherStatsOverview::class,
+                \App\Filament\Widgets\TeacherClassesTable::class,
+                \App\Filament\Widgets\StudentStatsOverview::class,
+                \App\Filament\Widgets\StudentScoresTable::class,
+                \App\Filament\Widgets\PassFailRatioChart::class,
+                \App\Filament\Widgets\ClassAverageComparisonChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -55,6 +77,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                \App\Http\Middleware\EnsureUserIsAdminOrTeacher::class,
             ]);
     }
 }

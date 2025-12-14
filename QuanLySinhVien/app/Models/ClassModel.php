@@ -48,6 +48,6 @@ class ClassModel extends Model
 
     public function students()
     {
-        return $this->hasMany(Student::class, 'class', 'class_id');
+        return $this->hasMany(Student::class, 'class_id', 'class_id');
     }
 }

@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Score extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $table = 'scores';
 
@@ -67,6 +69,21 @@ class Score extends Model
     public function subject()
     {
         return $this->belongsTo(Subject::class, 'subject_id', 'subject_id');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['student_id', 'subject_id', 'cc', 'gk', 'ck', 'total'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => match($eventName) {
+                'created' => 'Tạo điểm mới',
+                'updated' => 'Cập nhật điểm',
+                'deleted' => 'Xóa điểm',
+                default => $eventName,
+            })
+            ->useLogName('score_changes');
     }
 }
 

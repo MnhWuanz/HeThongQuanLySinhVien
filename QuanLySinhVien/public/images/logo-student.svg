@@ -1,0 +1,21 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Student icon -->
+  <g>
+    <!-- Head -->
+    <circle cx="20" cy="12" r="6" fill="#0EA5E9" stroke="#0284C7" stroke-width="1.5"/>
+    <!-- Body -->
+    <path d="M10 22C10 19 14 17 20 17C26 17 30 19 30 22V28C30 29 29 30 28 30H12C11 30 10 29 10 28V22Z" fill="#0EA5E9" stroke="#0284C7" stroke-width="1.5"/>
+    <!-- Book -->
+    <rect x="17" y="21" width="6" height="7" rx="0.5" fill="#FFF" opacity="0.3"/>
+    <!-- Stars (academic excellence) -->
+    <path d="M6 8L7 10L9 10L7.5 11.5L8 14L6 12.5L4 14L4.5 11.5L3 10L5 10L6 8Z" fill="#FCD34D"/>
+    <path d="M34 8L35 10L37 10L35.5 11.5L36 14L34 12.5L32 14L32.5 11.5L31 10L33 10L34 8Z" fill="#FCD34D"/>
+  </g>
+  <!-- Text -->
+  <text x="42" y="18" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#0EA5E9">
+    CỔNG SINH VIÊN
+  </text>
+  <text x="42" y="30" font-family="Inter, sans-serif" font-size="9" font-weight="500" fill="#0284C7">
+    ĐẠI HỌC ABC
+  </text>
+</svg>
