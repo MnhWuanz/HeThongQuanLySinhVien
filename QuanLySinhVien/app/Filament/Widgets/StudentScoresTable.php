@@ -8,6 +8,7 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Actions\Action;
 
 class StudentScoresTable extends BaseWidget
 {
@@ -77,7 +78,22 @@ class StudentScoresTable extends BaseWidget
             ->defaultSort('subject.name', 'asc')
             ->paginated([10, 25, 50])
             ->striped()
-            ->defaultPaginationPageOption(10);
+            ->defaultPaginationPageOption(10)
+            ->headerActions([
+                Action::make('print_transcript')
+                    ->label('In bảng điểm')
+                    ->icon('heroicon-o-printer')
+                    ->color('primary')
+                    ->url(fn () => route('transcript.download'))
+                    ->openUrlInNewTab(),
+                
+                Action::make('view_transcript')
+                    ->label('Xem bảng điểm')
+                    ->icon('heroicon-o-document-text')
+                    ->color('info')
+                    ->url(fn () => route('transcript.view'))
+                    ->openUrlInNewTab(),
+            ]);
     }
 
     protected function getTableQuery(): ?Builder

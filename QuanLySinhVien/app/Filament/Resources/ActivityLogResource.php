@@ -82,11 +82,24 @@ class ActivityLogResource extends Resource
                     ->dateTime('d/m/Y H:i:s')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('causer.name')
+                Tables\Columns\TextColumn::make('causer.full_name')
                     ->label('Người thực hiện')
                     ->searchable()
                     ->sortable()
-                    ->default('Hệ thống'),
+                    ->default('Hệ thống')
+                    ->getStateUsing(function ($record) {
+                        if (!$record->causer) {
+                            return 'Hệ thống';
+                        }
+                        // Try to get the full name from related model (teacher or student)
+                        if ($record->causer->teacher) {
+                            return $record->causer->teacher->full_name;
+                        }
+                        if ($record->causer->student) {
+                            return $record->causer->student->full_name;
+                        }
+                        return $record->causer->email ?? 'N/A';
+                    }),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Hành động')
                     ->searchable()
@@ -162,7 +175,7 @@ class ActivityLogResource extends Resource
                     ]),
                 Tables\Filters\SelectFilter::make('causer_id')
                     ->label('Người thực hiện')
-                    ->relationship('causer', 'name')
+                    ->relationship('causer', 'email')
                     ->searchable()
                     ->preload(),
                 Tables\Filters\Filter::make('created_at')
