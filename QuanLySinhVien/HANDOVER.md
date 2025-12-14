@@ -5,8 +5,8 @@
 **Tên dự án**: Hệ Thống Quản Lý Sinh Viên  
 **Ngày bàn giao**: December 14, 2025  
 **Phiên bản**: 1.0.0  
-**Người bàn giao**: [Tên người bàn giao]  
-**Người nhận**: [Tên người nhận]
+**Người bàn giao**: Trần Văn Quang
+**Người nhận**: Nguyễn Mạnh Quân
 
 ---
 
