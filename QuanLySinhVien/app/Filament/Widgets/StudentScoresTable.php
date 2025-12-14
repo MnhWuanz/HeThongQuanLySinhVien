@@ -14,7 +14,7 @@ class StudentScoresTable extends BaseWidget
 {
     protected static ?int $sort = 1;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {
@@ -30,36 +30,36 @@ class StudentScoresTable extends BaseWidget
                         ->searchable()
                         ->weight('bold')
                         ->size('sm')
-                        ->description(fn ($record) => 'Mã: ' . $record->subject->subject_id . ' • ' . $record->subject->credit . ' TC'),
-                    
+                        ->description(fn($record) => 'Mã: ' . $record->subject->subject_id . ' • ' . $record->subject->credit . ' TC'),
+
                     Tables\Columns\Layout\Split::make([
                         Tables\Columns\TextColumn::make('cc')
                             ->label('CC')
                             ->badge()
                             ->color('gray')
                             ->default('-')
-                            ->formatStateUsing(fn ($state) => 'CC: ' . ($state ?? '-')),
-                        
+                            ->formatStateUsing(fn($state) => 'CC: ' . ($state ?? '-')),
+
                         Tables\Columns\TextColumn::make('gk')
                             ->label('GK')
                             ->badge()
                             ->color('info')
                             ->default('-')
-                            ->formatStateUsing(fn ($state) => 'GK: ' . ($state ?? '-')),
-                        
+                            ->formatStateUsing(fn($state) => 'GK: ' . ($state ?? '-')),
+
                         Tables\Columns\TextColumn::make('ck')
                             ->label('CK')
                             ->badge()
                             ->color('warning')
                             ->default('-')
-                            ->formatStateUsing(fn ($state) => 'CK: ' . ($state ?? '-')),
-                        
+                            ->formatStateUsing(fn($state) => 'CK: ' . ($state ?? '-')),
+
                         Tables\Columns\TextColumn::make('total')
                             ->label('TK')
                             ->badge()
                             ->size('lg')
                             ->weight('bold')
-                            ->color(fn ($state) => match(true) {
+                            ->color(fn($state) => match (true) {
                                 $state >= 8.5 => 'success',
                                 $state >= 7.0 => 'info',
                                 $state >= 5.5 => 'warning',
@@ -67,7 +67,7 @@ class StudentScoresTable extends BaseWidget
                                 default => 'danger',
                             })
                             ->default('-')
-                            ->formatStateUsing(fn ($state) => 'TK: ' . ($state ?? '-')),
+                            ->formatStateUsing(fn($state) => 'TK: ' . ($state ?? '-')),
                     ])->grow(false),
                 ])->space(2),
             ])
@@ -75,7 +75,7 @@ class StudentScoresTable extends BaseWidget
                 'md' => 1,
                 'lg' => 1,
             ])
-            ->defaultSort('subject.name', 'asc')
+            ->defaultSort('subject_id', 'asc')
             ->paginated([10, 25, 50])
             ->striped()
             ->defaultPaginationPageOption(10)
@@ -84,14 +84,14 @@ class StudentScoresTable extends BaseWidget
                     ->label('In bảng điểm')
                     ->icon('heroicon-o-printer')
                     ->color('primary')
-                    ->url(fn () => route('transcript.download'))
+                    ->url(fn() => route('transcript.download'))
                     ->openUrlInNewTab(),
-                
+
                 Action::make('view_transcript')
                     ->label('Xem bảng điểm')
                     ->icon('heroicon-o-document-text')
                     ->color('info')
-                    ->url(fn () => route('transcript.view'))
+                    ->url(fn() => route('transcript.view'))
                     ->openUrlInNewTab(),
             ]);
     }
@@ -100,14 +100,18 @@ class StudentScoresTable extends BaseWidget
     {
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
-        
+
         if (!$user || !$user->student) {
             return Score::query()->whereRaw('1 = 0'); // Empty query
         }
 
         return Score::query()
             ->where('student_id', $user->student->student_id)
-            ->with(['subject']);
+            ->with([
+                'subject' => function ($query) {
+                    $query->orderBy('name', 'asc');
+                }
+            ]);
     }
 
     public static function canView(): bool

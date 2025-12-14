@@ -25,6 +25,32 @@ class SubjectResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Môn học';
 
+    protected static ?string $navigationGroup = 'Quản lý học vụ';
+
+    public static function canCreate(): bool
+    {
+        // Chỉ Super_Admin mới có quyền tạo
+        return auth()->user()?->hasRole('Super_Admin') ?? false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        // Chỉ Super_Admin mới có quyền sửa
+        return auth()->user()?->hasRole('Super_Admin') ?? false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        // Chỉ Super_Admin mới có quyền xóa
+        return auth()->user()?->hasRole('Super_Admin') ?? false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        // Chỉ Super_Admin mới có quyền xóa nhiều
+        return auth()->user()?->hasRole('Super_Admin') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form

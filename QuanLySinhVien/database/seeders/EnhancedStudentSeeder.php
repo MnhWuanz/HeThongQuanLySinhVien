@@ -54,10 +54,8 @@ class EnhancedStudentSeeder extends Seeder
                     'email' => $email,
                     'password' => Hash::make('password'),
                     'email_verified_at' => now(),
+                    'role' => 'Student',
                 ]);
-
-                // Assign student role
-                $user->assignRole('student');
 
                 // Tạo student record
                 Student::create([
