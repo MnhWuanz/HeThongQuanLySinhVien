@@ -41,6 +41,8 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 \App\Filament\Widgets\TeacherStatsOverview::class,
                 \App\Filament\Widgets\TeacherClassesTable::class,
+                \App\Filament\Widgets\StudentStatsOverview::class,
+                \App\Filament\Widgets\StudentScoresTable::class,
             ])
             ->middleware([
                 EncryptCookies::class,
