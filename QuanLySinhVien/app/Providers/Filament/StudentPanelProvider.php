@@ -27,9 +27,16 @@ class StudentPanelProvider extends PanelProvider
             ->path('student')
             ->login(\App\Filament\Pages\Auth\StudentLogin::class)
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => Color::Sky,
+                'danger' => Color::Red,
+                'gray' => Color::Zinc,
+                'info' => Color::Cyan,
+                'success' => Color::Green,
+                'warning' => Color::Orange,
             ])
+            ->font('Inter')
             ->pages([
+                \App\Filament\Student\Pages\Dashboard::class,
                 \App\Filament\Student\Pages\Profile::class,
                 \App\Filament\Student\Pages\Scoreboard::class,
             ])
@@ -51,7 +58,13 @@ class StudentPanelProvider extends PanelProvider
             ])
             ->authGuard('web')
             ->sidebarCollapsibleOnDesktop()
-            ->brandName('Hệ thống Quản lý Sinh viên');
+            ->brandName('🎓 Cổng Sinh viên - ĐH ABC')
+            ->brandLogo(asset('images/logo-student.png'))
+            ->brandLogoHeight('2.5rem')
+            ->favicon(asset('images/favicon.png'))
+            ->topNavigation()
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s');
     }
 }
 

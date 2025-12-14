@@ -1,0 +1,23 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Graduation cap icon -->
+  <g>
+    <!-- Cap top -->
+    <path d="M20 8L35 13L20 18L5 13L20 8Z" fill="#4F46E5" stroke="#4F46E5" stroke-width="1.5" stroke-linejoin="round"/>
+    <!-- Cap tassel -->
+    <circle cx="35" cy="13" r="2" fill="#EF4444"/>
+    <line x1="35" y1="15" x2="35" y2="20" stroke="#EF4444" stroke-width="1.5"/>
+    <!-- Cap bottom -->
+    <path d="M8 15V20C8 23 12 26 20 26C28 26 32 23 32 20V15" stroke="#4F46E5" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Book stack -->
+    <rect x="5" y="28" width="30" height="3" rx="1" fill="#0EA5E9"/>
+    <rect x="7" y="31" width="26" height="3" rx="1" fill="#06B6D4"/>
+    <rect x="9" y="34" width="22" height="3" rx="1" fill="#14B8A6"/>
+  </g>
+  <!-- Text -->
+  <text x="42" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#1E293B">
+    ĐẠI HỌC ABC
+  </text>
+  <text x="42" y="32" font-family="Inter, sans-serif" font-size="9" font-weight="500" fill="#64748B">
+    HỆ THỐNG QUẢN LÝ
+  </text>
+</svg>

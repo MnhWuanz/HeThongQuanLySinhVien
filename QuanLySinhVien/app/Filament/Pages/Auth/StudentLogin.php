@@ -15,7 +15,17 @@ class StudentLogin extends BaseLogin
 
     protected function hasFullWidthForm(): bool
     {
-        return true;
+        return false;
+    }
+
+    public function getHeading(): string
+    {
+        return '🎓 Chào mừng Sinh viên';
+    }
+
+    public function getSubHeading(): string
+    {
+        return 'Cổng thông tin Sinh viên - Trường Đại học ABC';
     }
 }
 

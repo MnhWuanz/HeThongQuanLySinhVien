@@ -12,4 +12,14 @@ class Login extends BaseLogin
             'data.email' => 'Thông tin đăng nhập sai',
         ]);
     }
+
+    public function getHeading(): string
+    {
+        return 'Đăng nhập Quản trị';
+    }
+
+    public function getSubHeading(): string
+    {
+        return 'Hệ thống Quản lý Sinh viên - Trường Đại học ABC';
+    }
 }
