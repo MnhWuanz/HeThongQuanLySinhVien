@@ -54,10 +54,10 @@ class StudentResource extends Resource
                     ->helperText('Ngày sinh không được trong tương lai'),
                 Forms\Components\FileUpload::make('avatar')
                     ->label('Ảnh đại diện')
-                    ->image()
+                    ->acceptedFileTypes(['image/jpeg', 'image/png'])
                     ->directory('avatars')
                     ->visibility('public')
-                    ->maxSize(2048) // 2MB
+                    ->maxSize(2048)
                     ->imageEditor()
                     ->imageEditorAspectRatios([
                         null,
@@ -65,7 +65,11 @@ class StudentResource extends Resource
                         '4:3',
                         '1:1',
                     ])
-                    ->helperText('Kích thước tối đa: 2MB'),
+                    ->validationMessages([
+                        'mimes' => 'Chỉ chấp nhận file ảnh định dạng JPG hoặc PNG.',
+                    ])
+                    ->helperText('Chỉ chấp nhận file JPG, PNG. Kích thước tối đa: 2MB')
+                    ->required(false),
                 Forms\Components\Select::make('class_id')
                     ->label('Lớp')
                     ->relationship('classRelation', 'class_id')
@@ -81,7 +85,9 @@ class StudentResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('avatar')
                     ->label('Ảnh')
-                    ->circular(),
+                    ->circular()
+                    ->defaultImageUrl(url('/images/default-avatar.png'))
+                    ->size(40),
                 Tables\Columns\TextColumn::make('student_id')
                     ->label('Mã sinh viên')
                     ->searchable()
