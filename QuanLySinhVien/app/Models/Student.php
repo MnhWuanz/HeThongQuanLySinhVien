@@ -20,11 +20,17 @@ class Student extends Model
         'birth_date',
         'avatar',
         'class_id',
+        'user_id',
     ];
 
     protected $casts = [
         'birth_date' => 'date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 
     public function classRelation()
     {

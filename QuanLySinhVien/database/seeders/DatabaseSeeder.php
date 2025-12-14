@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
 
         // Seed dữ liệu mẫu
         $this->call([
+            RoleSeeder::class,
             DepartmentSeeder::class,
             ClassModelSeeder::class,
             StudentSeeder::class,
