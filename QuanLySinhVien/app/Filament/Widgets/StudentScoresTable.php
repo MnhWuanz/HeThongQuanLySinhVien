@@ -23,51 +23,61 @@ class StudentScoresTable extends BaseWidget
                 $this->getTableQuery()
             )
             ->columns([
-                Tables\Columns\TextColumn::make('subject.subject_id')
-                    ->label('Mã môn')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('subject.name')
-                    ->label('Tên môn học')
-                    ->searchable()
-                    ->sortable()
-                    ->weight('bold'),
-                Tables\Columns\TextColumn::make('subject.credit')
-                    ->label('Tín chỉ')
-                    ->alignCenter()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('cc')
-                    ->label('CC')
-                    ->numeric(decimalPlaces: 2)
-                    ->alignCenter()
-                    ->default('-'),
-                Tables\Columns\TextColumn::make('gk')
-                    ->label('GK')
-                    ->numeric(decimalPlaces: 2)
-                    ->alignCenter()
-                    ->default('-'),
-                Tables\Columns\TextColumn::make('ck')
-                    ->label('CK')
-                    ->numeric(decimalPlaces: 2)
-                    ->alignCenter()
-                    ->default('-'),
-                Tables\Columns\TextColumn::make('total')
-                    ->label('Tổng kết')
-                    ->numeric(decimalPlaces: 2)
-                    ->alignCenter()
-                    ->weight('bold')
-                    ->color(fn ($state) => match(true) {
-                        $state >= 8.5 => 'success',
-                        $state >= 7.0 => 'info',
-                        $state >= 5.5 => 'warning',
-                        $state >= 4.0 => 'warning',
-                        default => 'danger',
-                    })
-                    ->badge()
-                    ->default('-'),
+                Tables\Columns\Layout\Stack::make([
+                    Tables\Columns\TextColumn::make('subject.name')
+                        ->label('Môn học')
+                        ->searchable()
+                        ->weight('bold')
+                        ->size('sm')
+                        ->description(fn ($record) => 'Mã: ' . $record->subject->subject_id . ' • ' . $record->subject->credit . ' TC'),
+                    
+                    Tables\Columns\Layout\Split::make([
+                        Tables\Columns\TextColumn::make('cc')
+                            ->label('CC')
+                            ->badge()
+                            ->color('gray')
+                            ->default('-')
+                            ->formatStateUsing(fn ($state) => 'CC: ' . ($state ?? '-')),
+                        
+                        Tables\Columns\TextColumn::make('gk')
+                            ->label('GK')
+                            ->badge()
+                            ->color('info')
+                            ->default('-')
+                            ->formatStateUsing(fn ($state) => 'GK: ' . ($state ?? '-')),
+                        
+                        Tables\Columns\TextColumn::make('ck')
+                            ->label('CK')
+                            ->badge()
+                            ->color('warning')
+                            ->default('-')
+                            ->formatStateUsing(fn ($state) => 'CK: ' . ($state ?? '-')),
+                        
+                        Tables\Columns\TextColumn::make('total')
+                            ->label('TK')
+                            ->badge()
+                            ->size('lg')
+                            ->weight('bold')
+                            ->color(fn ($state) => match(true) {
+                                $state >= 8.5 => 'success',
+                                $state >= 7.0 => 'info',
+                                $state >= 5.5 => 'warning',
+                                $state >= 4.0 => 'warning',
+                                default => 'danger',
+                            })
+                            ->default('-')
+                            ->formatStateUsing(fn ($state) => 'TK: ' . ($state ?? '-')),
+                    ])->grow(false),
+                ])->space(2),
+            ])
+            ->contentGrid([
+                'md' => 1,
+                'lg' => 1,
             ])
             ->defaultSort('subject.name', 'asc')
-            ->paginated([10, 25, 50]);
+            ->paginated([10, 25, 50])
+            ->striped()
+            ->defaultPaginationPageOption(10);
     }
 
     protected function getTableQuery(): ?Builder
