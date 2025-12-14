@@ -11,6 +11,8 @@ class StudentStatsOverview extends BaseWidget
 {
     protected static ?int $sort = 0;
 
+    protected static ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         /** @var \App\Models\User|null $user */
@@ -27,18 +29,21 @@ class StudentStatsOverview extends BaseWidget
         $passedSubjects = $scores->where('total', '>=', 5.0)->count();
 
         return [
-            Stat::make('Tổng số môn', $totalSubjects)
-                ->description('Môn học đã có điểm')
+            Stat::make('Số môn', $totalSubjects)
+                ->description('Đã có điểm')
                 ->descriptionIcon('heroicon-o-book-open')
-                ->color('info'),
-            Stat::make('Điểm trung bình', number_format($averageScore, 2))
-                ->description('GPA của bạn')
+                ->color('info')
+                ->extraAttributes(['class' => 'text-center']),
+            Stat::make('GPA', number_format($averageScore, 2))
+                ->description('Điểm TB')
                 ->descriptionIcon('heroicon-o-academic-cap')
-                ->color($averageScore >= 8.0 ? 'success' : ($averageScore >= 6.5 ? 'warning' : 'danger')),
-            Stat::make('Môn đạt', $passedSubjects . '/' . $totalSubjects)
-                ->description('Điểm >= 5.0')
+                ->color($averageScore >= 8.0 ? 'success' : ($averageScore >= 6.5 ? 'warning' : 'danger'))
+                ->extraAttributes(['class' => 'text-center']),
+            Stat::make('Đạt', $passedSubjects . '/' . $totalSubjects)
+                ->description('≥ 5.0')
                 ->descriptionIcon('heroicon-o-check-circle')
-                ->color('success'),
+                ->color('success')
+                ->extraAttributes(['class' => 'text-center']),
         ];
     }
 
