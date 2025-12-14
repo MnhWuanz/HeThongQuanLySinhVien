@@ -153,19 +153,19 @@
         </div>
         <div class="info-row">
             <span class="info-label">Mã sinh viên:</span>
-            <span class="info-value">{{ $student->student_code }}</span>
+            <span class="info-value">{{ $student->student_id }}</span>
         </div>
         <div class="info-row">
             <span class="info-label">Ngày sinh:</span>
-            <span class="info-value">{{ $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y') : 'N/A' }}</span>
+            <span class="info-value">{{ $student->birth_date ? \Carbon\Carbon::parse($student->birth_date)->format('d/m/Y') : 'N/A' }}</span>
         </div>
         <div class="info-row">
             <span class="info-label">Lớp:</span>
-            <span class="info-value">{{ $student->class->name ?? 'N/A' }}</span>
+            <span class="info-value">{{ $student->classRelation->class_id ?? 'N/A' }}</span>
         </div>
         <div class="info-row">
             <span class="info-label">Khoa:</span>
-            <span class="info-value">{{ $student->class->department->name ?? 'N/A' }}</span>
+            <span class="info-value">{{ $student->classRelation->departmentRelation->name ?? 'N/A' }}</span>
         </div>
     </div>
     
@@ -202,7 +202,7 @@
                 @endphp
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $score->subject->code ?? 'N/A' }}</td>
+                    <td>{{ $score->subject->subject_id ?? 'N/A' }}</td>
                     <td class="text-left">{{ $score->subject->name ?? 'N/A' }}</td>
                     <td>{{ number_format($score->cc, 1) }}</td>
                     <td>{{ number_format($score->gk, 1) }}</td>

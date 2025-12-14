@@ -16,41 +16,44 @@ class TranscriptController extends Controller
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        
+
         // Check if user has student role
         if (!$user->hasRole('Student')) {
             abort(403, 'Unauthorized access.');
         }
-        
+
         // Get student
         $student = $user->student;
-        
+
         if (!$student) {
             abort(404, 'Student profile not found.');
         }
-        
+
         // Get all scores for this student
-        $scores = Score::where('student_id', $student->id)
-            ->with(['subject', 'student.class.department'])
+        $scores = Score::where('student_id', $student->student_id)
+            ->with(['subject'])
             ->orderBy('subject_id')
             ->get();
-        
+
+        // Load student with relationships
+        $student->load(['classRelation.departmentRelation']);
+
         // Load PDF view
         $pdf = Pdf::loadView('pdf.transcript', [
             'student' => $student,
             'scores' => $scores
         ]);
-        
+
         // Set paper size and orientation
         $pdf->setPaper('A4', 'portrait');
-        
+
         // Generate filename
-        $filename = 'BangDiem_' . $student->student_code . '_' . date('YmdHis') . '.pdf';
-        
+        $filename = 'BangDiem_' . $student->student_id . '_' . date('YmdHis') . '.pdf';
+
         // Download PDF
         return $pdf->download($filename);
     }
-    
+
     /**
      * View transcript in browser
      */
@@ -58,35 +61,38 @@ class TranscriptController extends Controller
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        
+
         // Check if user has student role
         if (!$user->hasRole('Student')) {
             abort(403, 'Unauthorized access.');
         }
-        
+
         // Get student
         $student = $user->student;
-        
+
         if (!$student) {
             abort(404, 'Student profile not found.');
         }
-        
+
         // Get all scores for this student
-        $scores = Score::where('student_id', $student->id)
-            ->with(['subject', 'student.class.department'])
+        $scores = Score::where('student_id', $student->student_id)
+            ->with(['subject'])
             ->orderBy('subject_id')
             ->get();
-        
+
+        // Load student with relationships
+        $student->load(['classRelation.departmentRelation']);
+
         // Load PDF view
         $pdf = Pdf::loadView('pdf.transcript', [
             'student' => $student,
             'scores' => $scores
         ]);
-        
+
         // Set paper size and orientation
         $pdf->setPaper('A4', 'portrait');
-        
+
         // Stream PDF (view in browser)
-        return $pdf->stream('BangDiem_' . $student->student_code . '.pdf');
+        return $pdf->stream('BangDiem_' . $student->student_id . '.pdf');
     }
 }
