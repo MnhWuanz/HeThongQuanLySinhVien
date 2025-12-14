@@ -503,7 +503,7 @@ php artisan optimize:clear
 
 ### 12.2. Liên hệ hỗ trợ
 - **Email**: support@example.com
-- **Phone**: [Số điện thoại]
+- **Phone**: 0776817201
 - **Support hours**: 9:00 - 17:00 (Thứ 2 - Thứ 6)
 
 ---
