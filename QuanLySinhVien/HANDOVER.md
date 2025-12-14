@@ -131,16 +131,16 @@ subjects (1) ─────< (n) scores
 
 ---
 
-## 5. TÀI KHOẢN MẶC ĐỊNH
+## 5. TÀI KHOẢN QUẢN TRỊ VIÊN (ADMIN)
 
-### Admin Account
-```
-Email: admin@example.com
-Password: password
-```
+### Tạo tài khoản admin an toàn
 
-**⚠️ QUAN TRỌNG**: Đổi mật khẩu ngay sau khi đăng nhập lần đầu!
-
+**Lưu ý bảo mật:**  
+- Không sử dụng tài khoản admin mặc định với mật khẩu yếu/dễ đoán.  
+- Khi triển khai hệ thống lần đầu, hãy tạo tài khoản admin với email và mật khẩu mạnh, duy nhất cho từng môi trường triển khai.  
+- Có thể cấu hình thông tin tài khoản admin ban đầu qua biến môi trường hoặc file cấu hình (`.env`).  
+- Đảm bảo mật khẩu đáp ứng các tiêu chí mạnh (ít nhất 12 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt).  
+- Lưu trữ thông tin đăng nhập ở nơi an toàn và không chia sẻ công khai.  
 ---
 
 ## 6. FILE VÀ THỨ MỤC QUAN TRỌNG
