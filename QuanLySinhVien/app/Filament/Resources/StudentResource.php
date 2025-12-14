@@ -55,6 +55,7 @@ class StudentResource extends Resource
                 Forms\Components\FileUpload::make('avatar')
                     ->label('Ảnh đại diện')
                     ->acceptedFileTypes(['image/jpeg', 'image/png'])
+                    ->disk('public')
                     ->directory('avatars')
                     ->visibility('public')
                     ->maxSize(2048)
@@ -85,6 +86,7 @@ class StudentResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('avatar')
                     ->label('Ảnh')
+                    ->disk('public')
                     ->circular()
                     ->defaultImageUrl(url('/images/default-avatar.png'))
                     ->size(40),
