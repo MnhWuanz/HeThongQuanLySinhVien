@@ -117,7 +117,9 @@ class StudentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultPaginationPageOption(10)
+            ->paginationPageOptions([5, 10, 25, 50, 100]);
     }
 
     public static function getRelations(): array
