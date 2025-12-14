@@ -17,12 +17,17 @@ class ClassModel extends Model
     protected $fillable = [
         'class_id',
         'department',
-        'advisor',
+        'teacher_id',
     ];
 
     public function departmentRelation()
     {
         return $this->belongsTo(Department::class, 'department', 'department_id');
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class, 'teacher_id', 'id');
     }
 
     public function students()
