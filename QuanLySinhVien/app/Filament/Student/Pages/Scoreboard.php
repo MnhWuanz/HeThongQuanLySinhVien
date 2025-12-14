@@ -53,15 +53,12 @@ class Scoreboard extends Page implements HasTable
             ->columns([
                 TextColumn::make('subject.subject_id')
                     ->label('Mã môn học')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 TextColumn::make('subject.name')
                     ->label('Tên môn học')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 TextColumn::make('subject.credit')
-                    ->label('Số tín chỉ')
-                    ->sortable(),
+                    ->label('Số tín chỉ'),
                 TextColumn::make('cc')
                     ->label('Điểm chuyên cần')
                     ->numeric(decimalPlaces: 2)
@@ -81,7 +78,7 @@ class Scoreboard extends Page implements HasTable
                     ->label('Điểm tổng kết')
                     ->numeric(decimalPlaces: 2)
                     ->sortable()
-                    ->color(fn ($state) => $state >= 5 ? 'success' : ($state >= 4 ? 'warning' : 'danger'))
+                    ->color(fn($state) => $state >= 5 ? 'success' : ($state >= 4 ? 'warning' : 'danger'))
                     ->weight('bold')
                     ->default('—'),
             ])
@@ -92,7 +89,8 @@ class Scoreboard extends Page implements HasTable
                     ->searchable()
                     ->preload(),
             ])
-            ->defaultSort('subject.name')
+            ->defaultSort('subject_id', 'asc')
+            ->persistSortInSession(false)
             ->paginated([10, 25, 50])
             ->emptyStateHeading('Chưa có điểm số')
             ->emptyStateDescription('Điểm số sẽ được hiển thị tại đây khi giáo viên nhập điểm.');
@@ -118,8 +116,7 @@ class Scoreboard extends Page implements HasTable
             \Filament\Actions\Action::make('refresh')
                 ->label('Làm mới')
                 ->icon('heroicon-o-arrow-path')
-                ->color('gray')
-                ->action(fn () => $this->dispatch('$refresh')),
+                ->action(fn() => $this->dispatch('$refresh')),
         ];
     }
 }

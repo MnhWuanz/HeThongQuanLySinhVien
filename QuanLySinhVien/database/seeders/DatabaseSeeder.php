@@ -15,19 +15,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
         // Seed dữ liệu mẫu
         $this->call([
             RoleSeeder::class,
+            AdminSeeder::class,
             DepartmentSeeder::class,
             ClassModelSeeder::class,
+            SubjectSeeder::class,
+            StudentUserSeeder::class,
             StudentSeeder::class,
+            ScoreSeeder::class,
         ]);
+
+        $this->command->info('All seeders completed successfully!');
     }
 }

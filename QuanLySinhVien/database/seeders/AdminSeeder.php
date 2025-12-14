@@ -1,4 +1,4 @@
-php artisan migrate:fresh --seed<?php
+<?php
 
 namespace Database\Seeders;
 
