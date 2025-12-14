@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class ClassModel extends Model
 {
@@ -19,6 +21,20 @@ class ClassModel extends Model
         'department',
         'teacher_id',
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('teacher', function (Builder $builder) {
+            /** @var \App\Models\User|null $user */
+            $user = Auth::user();
+            if (Auth::check() && $user && $user->hasRole('Teacher')) {
+                $teacher = Teacher::where('user_id', Auth::id())->first();
+                if ($teacher) {
+                    $builder->where('teacher_id', $teacher->id);
+                }
+            }
+        });
+    }
 
     public function departmentRelation()
     {
