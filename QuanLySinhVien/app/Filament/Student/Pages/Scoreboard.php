@@ -99,6 +99,20 @@ class Scoreboard extends Page implements HasTable
     protected function getHeaderActions(): array
     {
         return [
+            \Filament\Actions\Action::make('print_transcript')
+                ->label('In bảng điểm')
+                ->icon('heroicon-o-printer')
+                ->color('primary')
+                ->url(fn () => route('transcript.download'))
+                ->openUrlInNewTab(),
+            
+            \Filament\Actions\Action::make('view_transcript')
+                ->label('Xem bảng điểm')
+                ->icon('heroicon-o-document-text')
+                ->color('info')
+                ->url(fn () => route('transcript.view'))
+                ->openUrlInNewTab(),
+            
             \Filament\Actions\Action::make('refresh')
                 ->label('Làm mới')
                 ->icon('heroicon-o-arrow-path')
