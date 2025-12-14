@@ -19,7 +19,13 @@ class Subject extends Model
         'subject_id',
         'name',
         'credit',
+        'department_id',
     ];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'department_id');
+    }
 
     protected function casts(): array
     {
