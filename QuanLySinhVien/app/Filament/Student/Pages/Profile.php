@@ -13,6 +13,8 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class Profile extends Page implements HasForms
 {
@@ -50,6 +52,7 @@ class Profile extends Page implements HasForms
             'birth_date' => $this->student->birth_date,
             'avatar' => $this->student->avatar,
             'class_id' => optional($this->student->classRelation)->class_id ?? '—',
+            'email' => $user->email ?? '',
         ]);
     }
 
@@ -57,7 +60,8 @@ class Profile extends Page implements HasForms
     {
         return $form
             ->schema([
-                Section::make('Thông tin cá nhân')
+                Section::make('Thông tin sinh viên')
+                    ->description('Thông tin cơ bản từ hồ sơ sinh viên')
                     ->schema([
                         TextInput::make('student_id')
                             ->label('Mã sinh viên')
@@ -65,18 +69,33 @@ class Profile extends Page implements HasForms
                             ->dehydrated(false),
                         TextInput::make('full_name')
                             ->label('Họ và tên')
-                            ->required()
-                            ->maxLength(100),
+                            ->disabled()
+                            ->dehydrated(false),
                         DatePicker::make('birth_date')
                             ->label('Ngày sinh')
-                            ->required()
                             ->displayFormat('d/m/Y')
                             ->native(false)
-                            ->maxDate(now())
-                            ->minDate(now()->subYears(100)),
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('class_id')
+                            ->label('Lớp')
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('email')
+                            ->label('Email')
+                            ->email()
+                            ->disabled()
+                            ->dehydrated(false),
+                    ])
+                    ->columns(2),
+
+                Section::make('Ảnh đại diện')
+                    ->description('Cập nhật ảnh đại diện của bạn')
+                    ->schema([
                         FileUpload::make('avatar')
                             ->label('Ảnh đại diện')
                             ->acceptedFileTypes(['image/jpeg', 'image/png'])
+                            ->disk('public')
                             ->directory('avatars')
                             ->visibility('public')
                             ->maxSize(2048)
@@ -88,12 +107,40 @@ class Profile extends Page implements HasForms
                                 '4:3',
                                 '1:1',
                             ])
-                            ->disk('public'),
-                        TextInput::make('class_id')
-                            ->label('Lớp')
+                            ->helperText('Chỉ chấp nhận file JPG, PNG. Kích thước tối đa: 2MB')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1),
 
-                            ->disabled()
-                            ->dehydrated(false),
+                Section::make('Đổi mật khẩu')
+                    ->description('Thay đổi mật khẩu đăng nhập của bạn')
+                    ->schema([
+                        TextInput::make('current_password')
+                            ->label('Mật khẩu hiện tại')
+                            ->password()
+                            ->revealable()
+                            ->dehydrated(false)
+                            ->rules(['nullable', 'current_password'])
+                            ->validationMessages([
+                                'current_password' => 'Mật khẩu hiện tại không đúng.',
+                            ]),
+                        TextInput::make('password')
+                            ->label('Mật khẩu mới')
+                            ->password()
+                            ->revealable()
+                            ->dehydrated(false)
+                            ->rules(['nullable', 'confirmed', Password::min(8)])
+                            ->validationMessages([
+                                'confirmed' => 'Mật khẩu xác nhận không khớp.',
+                                'min' => 'Mật khẩu phải có ít nhất 8 ký tự.',
+                            ])
+                            ->helperText('Để trống nếu không muốn đổi mật khẩu'),
+                        TextInput::make('password_confirmation')
+                            ->label('Xác nhận mật khẩu mới')
+                            ->password()
+                            ->revealable()
+                            ->dehydrated(false)
+                            ->requiredWith('password'),
                     ])
                     ->columns(2),
             ])
@@ -105,6 +152,8 @@ class Profile extends Page implements HasForms
     {
         $data = $this->form->getState();
 
+        $user = Auth::user();
+
         // Xử lý avatar - FileUpload có thể trả về array
         $avatar = $data['avatar'] ?? null;
         if (is_array($avatar)) {
@@ -114,14 +163,39 @@ class Profile extends Page implements HasForms
             $avatar = $this->student->avatar;
         }
 
+        // Cập nhật avatar
         $this->student->update([
-            'full_name' => $data['full_name'] ?? $this->student->full_name,
-            'birth_date' => $data['birth_date'] ?? $this->student->birth_date,
             'avatar' => $avatar,
         ]);
 
+        // Xử lý đổi mật khẩu
+        if (!empty($data['password'])) {
+            if (empty($data['current_password'])) {
+                Notification::make()
+                    ->title('Lỗi')
+                    ->body('Vui lòng nhập mật khẩu hiện tại để đổi mật khẩu mới.')
+                    ->danger()
+                    ->send();
+                return;
+            }
+
+            if (!Hash::check($data['current_password'], $user->password)) {
+                Notification::make()
+                    ->title('Lỗi')
+                    ->body('Mật khẩu hiện tại không đúng.')
+                    ->danger()
+                    ->send();
+                return;
+            }
+
+            $user->update([
+                'password' => Hash::make($data['password']),
+            ]);
+        }
+
         Notification::make()
             ->title('Cập nhật thành công')
+            ->body('Thông tin hồ sơ của bạn đã được cập nhật.')
             ->success()
             ->send();
     }
