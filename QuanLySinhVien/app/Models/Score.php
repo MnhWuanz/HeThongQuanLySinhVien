@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Score extends Model
 {
@@ -27,9 +29,24 @@ class Score extends Model
         'total' => 'decimal:2',
     ];
 
-    protected static function boot()
+    protected static function booted()
     {
-        parent::boot();
+        // Global scope for teacher
+        static::addGlobalScope('teacher', function (Builder $builder) {
+            /** @var \App\Models\User|null $user */
+            $user = Auth::user();
+            if (Auth::check() && $user && $user->hasRole('Teacher')) {
+                $teacher = Teacher::where('user_id', Auth::id())->first();
+                if ($teacher) {
+                    // Chỉ hiển thị điểm của sinh viên trong lớp do giáo viên này chủ nhiệm
+                    $builder->whereHas('student', function ($query) use ($teacher) {
+                        $query->whereHas('classRelation', function ($classQuery) use ($teacher) {
+                            $classQuery->where('teacher_id', $teacher->id);
+                        });
+                    });
+                }
+            }
+        });
 
         static::saving(function ($score) {
             // Tự động tính tổng kết nếu chưa có hoặc các điểm thành phần thay đổi
