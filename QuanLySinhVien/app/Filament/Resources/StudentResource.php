@@ -44,7 +44,14 @@ class StudentResource extends Resource
                     ->label('Ngày sinh')
                     ->required()
                     ->displayFormat('d/m/Y')
-                    ->native(false),
+                    ->native(false)
+                    ->maxDate(now())
+                    ->minDate(now()->subYears(100))
+                    ->validationMessages([
+                        'before_or_equal' => 'Ngày sinh không được trong tương lai.',
+                        'after' => 'Ngày sinh không hợp lệ.',
+                    ])
+                    ->helperText('Ngày sinh không được trong tương lai'),
                 Forms\Components\FileUpload::make('avatar')
                     ->label('Ảnh đại diện')
                     ->image()
