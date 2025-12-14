@@ -107,7 +107,8 @@ class StudentResource extends Resource
                     ->label('Lớp')
                     ->relationship('classRelation', 'class_id')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->multiple(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
